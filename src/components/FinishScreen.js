@@ -1,9 +1,7 @@
 import React from 'react'
 
-const FinishScreen = ({points, maxPossiblePoints, highscore}) => {
-
+const FinishScreen = ({points, maxPossiblePoints, highscore, dispatch}) => {
   const percentage = (points / maxPossiblePoints) * 100;
-
   return (
     <>
     <p className="result">
@@ -14,9 +12,10 @@ const FinishScreen = ({points, maxPossiblePoints, highscore}) => {
     </p>
     <p className="highscore">
       (Highscore: {highscore} points)
-      </p>
+    </p>
+    
+    <button className="btn btn-ui" onClick={() => {return dispatch({ type : 'reset'})}}>restart</button> 
     </>
   )
 }
-
 export default FinishScreen
