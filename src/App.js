@@ -7,7 +7,7 @@ import Loader from './components/Loader';
 import Error from './components/Error'
 import StartScreen from './components/StartScreen';
 import Question from './components/Question';
-import NextButton from './components/Button';
+import NextButton from './components/NextButton';
 import Progress from './components/Progress';
 import FinishScreen from './components/FinishScreen';
 
@@ -18,6 +18,7 @@ const initialState = {
   index: 0,
   answer: null,
   points: 0,
+  highscore: 0
  };
 
 function reducer(state, action) {
@@ -49,6 +50,9 @@ function reducer(state, action) {
     case 'nextQuestion':
       return {...state, index: state.index + 1, answer: null}
 
+    case "finish":
+      return {...state, status:"finished", highscore: state.points > state.highscore ? state.points : state.highscore}  
+
     default:
         throw new Error("Action Unknown");
    }
@@ -56,10 +60,11 @@ function reducer(state, action) {
 
 function App() {
 
-  const  [{questions, status, index, answer, points}, dispatch] = useReducer(reducer,initialState);
+  const  [{questions, status, index, answer, points, highscore}, dispatch] = useReducer(reducer,initialState);
 
   const numQuestions = questions.length;
   const maxPossiblePoints = questions.reduce((prev, cur) => prev + cur.points ,0)
+  console.log(maxPossiblePoints);
 
   useEffect(function() {
     fetch('http://localhost:9000/questions')
@@ -78,11 +83,13 @@ function App() {
      {status === 'ready' && <StartScreen numQuestions={numQuestions} dispatch={dispatch}/>}
      {status === 'active' && 
      <>
+
      <Progress index={index} numQuestions={numQuestions} points={points} maxPossiblePoints={maxPossiblePoints} />
      <Question question={questions[index]} dispatch={dispatch} answer={answer}/>
      <NextButton dispatch={dispatch} answer={answer} index={index} numQuestions={numQuestions} />
+
      </> }
-     {status === 'finished' && <FinishScreen points={points} numQuestions={numQuestions} />}
+     {status === 'finished' && <FinishScreen highscore={highscore} points={points} numQuestions={numQuestions} maxPossiblePoints={maxPossiblePoints}/>}
     </Main>
 
     </div>
